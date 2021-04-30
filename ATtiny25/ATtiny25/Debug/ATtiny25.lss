@@ -1,0 +1,321 @@
+
+ATtiny25.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000160  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  000001d4  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000004  00800060  00800060  000001d4  2**0
+                  ALLOC
+  3 .comment      00000030  00000000  00000000  000001d4  2**0
+                  CONTENTS, READONLY
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000204  2**2
+                  CONTENTS, READONLY
+  5 .debug_aranges 00000038  00000000  00000000  00000240  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_info   0000069a  00000000  00000000  00000278  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 0000056d  00000000  00000000  00000912  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00000331  00000000  00000000  00000e7f  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_frame  00000070  00000000  00000000  000011b0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000336  00000000  00000000  00001220  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_loc    00000118  00000000  00000000  00001556  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_ranges 00000028  00000000  00000000  0000166e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0e c0       	rjmp	.+28     	; 0x1e <__ctors_end>
+   2:	1b c0       	rjmp	.+54     	; 0x3a <__bad_interrupt>
+   4:	1a c0       	rjmp	.+52     	; 0x3a <__bad_interrupt>
+   6:	19 c0       	rjmp	.+50     	; 0x3a <__bad_interrupt>
+   8:	18 c0       	rjmp	.+48     	; 0x3a <__bad_interrupt>
+   a:	18 c0       	rjmp	.+48     	; 0x3c <__vector_5>
+   c:	16 c0       	rjmp	.+44     	; 0x3a <__bad_interrupt>
+   e:	15 c0       	rjmp	.+42     	; 0x3a <__bad_interrupt>
+  10:	14 c0       	rjmp	.+40     	; 0x3a <__bad_interrupt>
+  12:	13 c0       	rjmp	.+38     	; 0x3a <__bad_interrupt>
+  14:	12 c0       	rjmp	.+36     	; 0x3a <__bad_interrupt>
+  16:	11 c0       	rjmp	.+34     	; 0x3a <__bad_interrupt>
+  18:	10 c0       	rjmp	.+32     	; 0x3a <__bad_interrupt>
+  1a:	0f c0       	rjmp	.+30     	; 0x3a <__bad_interrupt>
+  1c:	0e c0       	rjmp	.+28     	; 0x3a <__bad_interrupt>
+
+0000001e <__ctors_end>:
+  1e:	11 24       	eor	r1, r1
+  20:	1f be       	out	0x3f, r1	; 63
+  22:	cf ed       	ldi	r28, 0xDF	; 223
+  24:	cd bf       	out	0x3d, r28	; 61
+
+00000026 <__do_clear_bss>:
+  26:	20 e0       	ldi	r18, 0x00	; 0
+  28:	a0 e6       	ldi	r26, 0x60	; 96
+  2a:	b0 e0       	ldi	r27, 0x00	; 0
+  2c:	01 c0       	rjmp	.+2      	; 0x30 <.do_clear_bss_start>
+
+0000002e <.do_clear_bss_loop>:
+  2e:	1d 92       	st	X+, r1
+
+00000030 <.do_clear_bss_start>:
+  30:	a4 36       	cpi	r26, 0x64	; 100
+  32:	b2 07       	cpc	r27, r18
+  34:	e1 f7       	brne	.-8      	; 0x2e <.do_clear_bss_loop>
+  36:	79 d0       	rcall	.+242    	; 0x12a <main>
+  38:	91 c0       	rjmp	.+290    	; 0x15c <_exit>
+
+0000003a <__bad_interrupt>:
+  3a:	e2 cf       	rjmp	.-60     	; 0x0 <__vectors>
+
+0000003c <__vector_5>:
+uint8_t  tmp=0;
+uint16_t temp1=0;
+uint16_t temp2=0;
+
+ISR(TIMER0_OVF_vect)
+{
+  3c:	1f 92       	push	r1
+  3e:	0f 92       	push	r0
+  40:	0f b6       	in	r0, 0x3f	; 63
+  42:	0f 92       	push	r0
+  44:	11 24       	eor	r1, r1
+  46:	8f 93       	push	r24
+	counter++;
+  48:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <counter>
+  4c:	8f 5f       	subi	r24, 0xFF	; 255
+  4e:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <counter>
+	
+	if(counter == 17 )
+  52:	81 31       	cpi	r24, 0x11	; 17
+  54:	39 f4       	brne	.+14     	; 0x64 <__SREG__+0x25>
+	{
+		baseband +=1;
+  56:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <baseband>
+  5a:	8f 5f       	subi	r24, 0xFF	; 255
+  5c:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <baseband>
+		counter=0;
+  60:	10 92 63 00 	sts	0x0063, r1	; 0x800063 <counter>
+	}
+	
+}
+  64:	8f 91       	pop	r24
+  66:	0f 90       	pop	r0
+  68:	0f be       	out	0x3f, r0	; 63
+  6a:	0f 90       	pop	r0
+  6c:	1f 90       	pop	r1
+  6e:	18 95       	reti
+
+00000070 <sendByte>:
+	while(baseband<phase)OCR0A=255;		//
+}*/
+}
+
+void sendByte(uint8_t ad)
+{
+  70:	40 e0       	ldi	r20, 0x00	; 0
+  72:	50 e0       	ldi	r21, 0x00	; 0
+
+for(uint8_t i=0;i<8;i++)
+{
+	tmp = (ad & (1<<i))>>i;
+  74:	e1 e0       	ldi	r30, 0x01	; 1
+  76:	f0 e0       	ldi	r31, 0x00	; 0
+  78:	68 2f       	mov	r22, r24
+  7a:	70 e0       	ldi	r23, 0x00	; 0
+
+	baseband=0;						//tren de 560uS
+	while(baseband<1)OCR0A=128;		//
+  7c:	30 e8       	ldi	r19, 0x80	; 128
+	
+	phase = tmp ? 3:1;
+  7e:	b3 e0       	ldi	r27, 0x03	; 3
+  80:	a1 e0       	ldi	r26, 0x01	; 1
+	
+	baseband=0;						// 1
+	while(baseband<phase)OCR0A=255;		//
+  82:	2f ef       	ldi	r18, 0xFF	; 255
+void sendByte(uint8_t ad)
+{
+
+for(uint8_t i=0;i<8;i++)
+{
+	tmp = (ad & (1<<i))>>i;
+  84:	cf 01       	movw	r24, r30
+  86:	04 2e       	mov	r0, r20
+  88:	02 c0       	rjmp	.+4      	; 0x8e <sendByte+0x1e>
+  8a:	88 0f       	add	r24, r24
+  8c:	99 1f       	adc	r25, r25
+  8e:	0a 94       	dec	r0
+  90:	e2 f7       	brpl	.-8      	; 0x8a <sendByte+0x1a>
+  92:	86 23       	and	r24, r22
+  94:	97 23       	and	r25, r23
+  96:	04 2e       	mov	r0, r20
+  98:	02 c0       	rjmp	.+4      	; 0x9e <sendByte+0x2e>
+  9a:	95 95       	asr	r25
+  9c:	87 95       	ror	r24
+  9e:	0a 94       	dec	r0
+  a0:	e2 f7       	brpl	.-8      	; 0x9a <sendByte+0x2a>
+  a2:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <_edata>
+
+	baseband=0;						//tren de 560uS
+  a6:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <baseband>
+	while(baseband<1)OCR0A=128;		//
+  aa:	39 bd       	out	0x29, r19	; 41
+  ac:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <baseband>
+  b0:	88 23       	and	r24, r24
+  b2:	d9 f3       	breq	.-10     	; 0xaa <sendByte+0x3a>
+	
+	phase = tmp ? 3:1;
+  b4:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <_edata>
+  b8:	81 11       	cpse	r24, r1
+  ba:	02 c0       	rjmp	.+4      	; 0xc0 <sendByte+0x50>
+  bc:	8a 2f       	mov	r24, r26
+  be:	01 c0       	rjmp	.+2      	; 0xc2 <sendByte+0x52>
+  c0:	8b 2f       	mov	r24, r27
+  c2:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <phase>
+	
+	baseband=0;						// 1
+  c6:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <baseband>
+	while(baseband<phase)OCR0A=255;		//
+  ca:	88 23       	and	r24, r24
+  cc:	39 f0       	breq	.+14     	; 0xdc <sendByte+0x6c>
+  ce:	29 bd       	out	0x29, r18	; 41
+  d0:	90 91 62 00 	lds	r25, 0x0062	; 0x800062 <baseband>
+  d4:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <phase>
+  d8:	98 17       	cp	r25, r24
+  da:	c8 f3       	brcs	.-14     	; 0xce <sendByte+0x5e>
+  dc:	4f 5f       	subi	r20, 0xFF	; 255
+  de:	5f 4f       	sbci	r21, 0xFF	; 255
+}
+
+void sendByte(uint8_t ad)
+{
+
+for(uint8_t i=0;i<8;i++)
+  e0:	48 30       	cpi	r20, 0x08	; 8
+  e2:	51 05       	cpc	r21, r1
+  e4:	79 f6       	brne	.-98     	; 0x84 <sendByte+0x14>
+	
+	baseband=0;						// 1
+	while(baseband<phase)OCR0A=255;		//
+}
+
+}
+  e6:	08 95       	ret
+
+000000e8 <sender>:
+}
+
+
+
+void sender(uint8_t address , uint8_t command)
+{
+  e8:	cf 93       	push	r28
+  ea:	df 93       	push	r29
+  ec:	d8 2f       	mov	r29, r24
+  ee:	c6 2f       	mov	r28, r22
+	
+	/*
+	temp1 = address | ~address<<8;
+	temp2 = command | ~command<<8;*/
+	
+	baseband=0;						//SOF
+  f0:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <baseband>
+	while(baseband<16)OCR0A=128;	//SOF
+  f4:	20 e8       	ldi	r18, 0x80	; 128
+  f6:	29 bd       	out	0x29, r18	; 41
+  f8:	90 91 62 00 	lds	r25, 0x0062	; 0x800062 <baseband>
+  fc:	90 31       	cpi	r25, 0x10	; 16
+  fe:	d8 f3       	brcs	.-10     	; 0xf6 <sender+0xe>
+	baseband=0;						//SOF
+ 100:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <baseband>
+	while(baseband<8)OCR0A=255;		//SOF
+ 104:	2f ef       	ldi	r18, 0xFF	; 255
+ 106:	29 bd       	out	0x29, r18	; 41
+ 108:	90 91 62 00 	lds	r25, 0x0062	; 0x800062 <baseband>
+ 10c:	98 30       	cpi	r25, 0x08	; 8
+ 10e:	d8 f3       	brcs	.-10     	; 0x106 <sender+0x1e>
+	
+	sendByte(address);
+ 110:	8d 2f       	mov	r24, r29
+ 112:	ae df       	rcall	.-164    	; 0x70 <sendByte>
+	sendByte(~address);
+ 114:	8d 2f       	mov	r24, r29
+ 116:	80 95       	com	r24
+ 118:	ab df       	rcall	.-170    	; 0x70 <sendByte>
+	sendByte(command);
+ 11a:	8c 2f       	mov	r24, r28
+ 11c:	a9 df       	rcall	.-174    	; 0x70 <sendByte>
+	sendByte(~command);
+ 11e:	8c 2f       	mov	r24, r28
+ 120:	80 95       	com	r24
+ 122:	a6 df       	rcall	.-180    	; 0x70 <sendByte>
+	phase = tmp ? 3:1;
+	
+	baseband=0;						// 1
+	while(baseband<phase)OCR0A=255;		//
+}*/
+}
+ 124:	df 91       	pop	r29
+ 126:	cf 91       	pop	r28
+ 128:	08 95       	ret
+
+0000012a <main>:
+}
+
+int main(void)
+{
+	
+	TCCR0B = 0b00000001  ;
+ 12a:	81 e0       	ldi	r24, 0x01	; 1
+ 12c:	83 bf       	out	0x33, r24	; 51
+	TCCR0A |= (1<<WGM00 ) | (1<<WGM01 ) | (1<<COM0A1);
+ 12e:	8a b5       	in	r24, 0x2a	; 42
+ 130:	83 68       	ori	r24, 0x83	; 131
+ 132:	8a bd       	out	0x2a, r24	; 42
+	DDRB |= 0xff;
+ 134:	87 b3       	in	r24, 0x17	; 23
+ 136:	8f ef       	ldi	r24, 0xFF	; 255
+ 138:	87 bb       	out	0x17, r24	; 23
+	TIMSK |= (1<<TOIE0); //interrupcion del TOV0
+ 13a:	89 b7       	in	r24, 0x39	; 57
+ 13c:	82 60       	ori	r24, 0x02	; 2
+ 13e:	89 bf       	out	0x39, r24	; 57
+	sei();
+ 140:	78 94       	sei
+	
+	while (1)
+	{
+		sender(0x05,0x03);
+ 142:	63 e0       	ldi	r22, 0x03	; 3
+ 144:	85 e0       	ldi	r24, 0x05	; 5
+ 146:	d0 df       	rcall	.-96     	; 0xe8 <sender>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 148:	2f ef       	ldi	r18, 0xFF	; 255
+ 14a:	80 e7       	ldi	r24, 0x70	; 112
+ 14c:	92 e0       	ldi	r25, 0x02	; 2
+ 14e:	21 50       	subi	r18, 0x01	; 1
+ 150:	80 40       	sbci	r24, 0x00	; 0
+ 152:	90 40       	sbci	r25, 0x00	; 0
+ 154:	e1 f7       	brne	.-8      	; 0x14e <main+0x24>
+ 156:	00 c0       	rjmp	.+0      	; 0x158 <main+0x2e>
+ 158:	00 00       	nop
+ 15a:	f3 cf       	rjmp	.-26     	; 0x142 <main+0x18>
+
+0000015c <_exit>:
+ 15c:	f8 94       	cli
+
+0000015e <__stop_program>:
+ 15e:	ff cf       	rjmp	.-2      	; 0x15e <__stop_program>
